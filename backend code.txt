@@ -1,0 +1,134 @@
+subscribing to email
+
+function subscribe($emailAddress) {
+    $database = new MongoDB\Client();
+    $collection = $database->my_database->subscribers;
+
+    $document = [
+        'email_address' => $emailAddress,
+    ];
+
+    $collection->insertOne($document);
+}
+
+unsubscribe to email
+
+function unsubscribe($emailAddress) {
+    $database = new MongoDB\Client();
+    $collection = $database->my_database->subscribers;
+
+    $collection->deleteOne([
+        'email_address' => $emailAddress,
+    ]);
+}
+
+function to send email
+
+function sendEmail($subject, $body) {
+    $mailer = new PHPMailer();
+
+    $mailer->setFrom('your_email@example.com', 'Your Name');
+
+    $database = new MongoDB\Client();
+    $collection = $database->my_database->subscribers;
+
+    $cursor = $collection->find();
+
+    foreach ($cursor as $document) {
+        $mailer->addAddress($document['email_address']);
+    }
+
+    $mailer->Subject = $subject;
+    $mailer->Body = $body;
+
+    $mailer->send();
+}
+
+
+To design a working backend database where user data is to be stored using MongoDB and Python
+
+
+pip install pymongo
+ 
+MongoDB connection:
+Python
+from pymongo import MongoClient
+
+client = MongoClient('localhost', 27017)
+ 
+Create a database and collection:
+Python
+db = client['my_database']
+collection = db['users']
+ 
+Create a user model:
+Python
+class User:
+    def _init_(self, username, email, password, first_name, last_name):
+        self.username = username
+        self.email = email
+        self.password = password
+        self.first_name = first_name
+        self.last_name = last_name
+
+ 
+Create a function to save a new user to the database:
+Python
+def save_user(user):
+    collection.insert_one(user._dict_)
+ 
+Create a function to get all users from the database:
+Python
+def get_all_users():
+    users = collection.find()
+    return users
+ 
+Create a function to get a user by ID:
+Python
+def get_user_by_id(user_id):
+    user = collection.find_one({'_id': user_id})
+    return user
+ 
+Create a function to update a user:
+Python
+def update_user(user):
+    collection.update_one({'id': user.id}, {'$set': user.__dict_})
+ 
+Create a function to delete a user:
+Python
+def delete_user(user_id):
+    collection.delete_one({'_id': user_id})
+ 
+You can then use these functions to implement a backend application that stores and manages user data. For example, you could create a simple web application that allows users to create, read, update, and delete their accounts.
+
+Here is an example of how to use the above functions to save a new user to the database:
+
+Python
+user = User('testuser', 'testuser@example.com', 'password', 'Test', 'User')
+save_user(user)
+ 
+Here is an example of how to get all users from the database:
+
+Python
+users = get_all_users()
+for user in users:
+    print(user.username)
+ 
+Here is an example of how to get a user by ID:
+
+Python
+user = get_user_by_id(1)
+print(user.username)
+ 
+Here is an example of how to update a user:
+
+Python
+user = get_user_by_id(1)
+user.username = 'newusername'
+update_user(user)
+ 
+Here is an example of how to delete a user:
+
+Python
+delete_user(1)
+ 
